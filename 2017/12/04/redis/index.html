@@ -1,0 +1,1325 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Redis,命令," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="strings   关键字 用处 eg     set 设置值 set key value   get 获取值 get key   setnx key不存在是在设置值 setnx key   getset 设置并返回旧值 getset key   setex 设置key并指定生存时间 setex key seconds value   psetex 设置key值并指定生存时间(毫秒) psetex">
+<meta name="keywords" content="Redis,命令">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis命令管理">
+<meta property="og:url" content="liveshapps.github.io/2017/12/04/redis/index.html">
+<meta property="og:site_name" content="lives">
+<meta property="og:description" content="strings   关键字 用处 eg     set 设置值 set key value   get 获取值 get key   setnx key不存在是在设置值 setnx key   getset 设置并返回旧值 getset key   setex 设置key并指定生存时间 setex key seconds value   psetex 设置key值并指定生存时间(毫秒) psetex">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-12-04T03:32:03.999Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redis命令管理">
+<meta name="twitter:description" content="strings   关键字 用处 eg     set 设置值 set key value   get 获取值 get key   setnx key不存在是在设置值 setnx key   getset 设置并返回旧值 getset key   setex 设置key并指定生存时间 setex key seconds value   psetex 设置key值并指定生存时间(毫秒) psetex">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="liveshapps.github.io/2017/12/04/redis/"/>
+
+
+
+
+
+  <title>Redis命令管理 | lives</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">lives</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">Life And Code Are Long Journey</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="liveshapps.github.io/2017/12/04/redis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="lives">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="lives">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Redis命令管理</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-04T11:32:03+08:00">
+                2017-12-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Redis/" itemprop="url" rel="index">
+                    <span itemprop="name">Redis</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="strings"><a href="#strings" class="headerlink" title="strings"></a>strings</h3><table>
+<thead>
+<tr>
+<th>关键字</th>
+<th>用处</th>
+<th>eg</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>set</code></td>
+<td>设置值</td>
+<td><code>set key value</code></td>
+</tr>
+<tr>
+<td><code>get</code></td>
+<td>获取值</td>
+<td><code>get key</code></td>
+</tr>
+<tr>
+<td><code>setnx</code></td>
+<td>key不存在是在设置值</td>
+<td><code>setnx key</code></td>
+</tr>
+<tr>
+<td><code>getset</code></td>
+<td>设置并返回旧值</td>
+<td><code>getset key</code></td>
+</tr>
+<tr>
+<td><code>setex</code></td>
+<td>设置key并指定生存时间</td>
+<td><code>setex key seconds value</code></td>
+</tr>
+<tr>
+<td><code>psetex</code></td>
+<td>设置key值并指定生存时间(毫秒)</td>
+<td><code>psetex key milliseconds value</code></td>
+</tr>
+<tr>
+<td><code>setrange</code></td>
+<td>设置子字符串</td>
+<td><code>setrange key offset value</code></td>
+</tr>
+<tr>
+<td><code>getrange</code></td>
+<td>获取子字符串</td>
+<td><code>getrange key start end</code></td>
+</tr>
+<tr>
+<td><code>mset</code></td>
+<td>设置多个值</td>
+<td><code>mset key value [key value ...]</code></td>
+</tr>
+<tr>
+<td><code>msetnx</code></td>
+<td>key不存在时设置多个值</td>
+<td><code>msetnx key value [key value ...]</code></td>
+</tr>
+<tr>
+<td><code>mget</code></td>
+<td>返回多个key的值</td>
+<td><code>mget key [key ...]</code></td>
+</tr>
+<tr>
+<td><code>incr</code></td>
+<td>自增</td>
+<td><code>incr key</code></td>
+</tr>
+<tr>
+<td><code>incrby</code></td>
+<td>增加指定值</td>
+<td><code>incrby key increment</code></td>
+</tr>
+<tr>
+<td><code>incrbyfloat</code></td>
+<td>增加一个浮点值</td>
+<td><code>incrbyfloat key increment</code></td>
+</tr>
+<tr>
+<td><code>decr</code></td>
+<td>自减</td>
+<td><code>decr key</code></td>
+</tr>
+<tr>
+<td><code>decrby</code></td>
+<td>自减指定值</td>
+<td><code>decrby key decrement</code></td>
+</tr>
+<tr>
+<td><code>setbit</code></td>
+<td>位设置</td>
+<td><code>setbit key offset value</code></td>
+</tr>
+<tr>
+<td><code>getbit</code></td>
+<td>获取位</td>
+<td><code>getbit key offset</code></td>
+</tr>
+<tr>
+<td><code>bitop</code></td>
+<td>位运算</td>
+<td><code>bitop operation destkey key [key ...]</code></td>
+</tr>
+<tr>
+<td><code>bitcount</code></td>
+<td>高位统计</td>
+<td><code>bitcount key [start] [end]</code></td>
+</tr>
+<tr>
+<td><code>append</code></td>
+<td>追加</td>
+<td><code>append key value</code></td>
+</tr>
+<tr>
+<td><code>strlen</code></td>
+<td>字符串长度</td>
+<td><code>strlen key</code></td>
+</tr>
+</tbody>
+</table>
+<a id="more"></a>
+<h3 id="hash"><a href="#hash" class="headerlink" title="hash"></a>hash</h3><table>
+<thead>
+<tr>
+<th>关键字</th>
+<th>用处</th>
+<th>eg</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>hset</code></td>
+<td>设置值</td>
+<td><code>hset key field value</code></td>
+</tr>
+<tr>
+<td><code>hsetex</code></td>
+<td>字段不存则设置其值</td>
+<td><code>hsetnx key field value</code></td>
+</tr>
+<tr>
+<td><code>hget</code></td>
+<td>获取指定字段值</td>
+<td><code>hget key field</code></td>
+</tr>
+<tr>
+<td><code>hgetall</code></td>
+<td>获取所有字段及值</td>
+<td><code>hgetall key</code></td>
+</tr>
+<tr>
+<td><code>hmset</code></td>
+<td>设置多个字段及值</td>
+<td><code>hmset key field value [field value ...]</code></td>
+</tr>
+<tr>
+<td><code>hmget</code></td>
+<td>返回多个字段值</td>
+<td><code>hmget key field [field ...]</code></td>
+</tr>
+<tr>
+<td><code>hdel</code></td>
+<td>字段删除</td>
+<td><code>hdel key field [field ...]</code></td>
+</tr>
+<tr>
+<td><code>hexists</code></td>
+<td>判断字段是否存在</td>
+<td><code>hexists key field</code></td>
+</tr>
+<tr>
+<td><code>hkeys</code></td>
+<td>返回所有字段</td>
+<td><code>hkeys key</code></td>
+</tr>
+<tr>
+<td><code>hlen</code></td>
+<td>返回字段数量</td>
+<td><code>hlen key</code></td>
+</tr>
+<tr>
+<td><code>hvals</code></td>
+<td>返回所有字段值</td>
+<td><code>hvals key</code></td>
+</tr>
+<tr>
+<td><code>hincrby</code></td>
+<td>为指定字段值增加</td>
+<td><code>hincrby key field increment</code></td>
+</tr>
+<tr>
+<td><code>hincrbyfloat</code></td>
+<td>为指定字段值增加浮点数</td>
+<td><code>hincrbyfloat key field increment</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="list"><a href="#list" class="headerlink" title="list"></a>list</h3><table>
+<thead>
+<tr>
+<th>关键字</th>
+<th>用处</th>
+<th>eg</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>lpush</code></td>
+<td>向列表头插入元素</td>
+<td><code>lpush key value [value ...]</code></td>
+</tr>
+<tr>
+<td><code>lpushx</code></td>
+<td>当列表存在则将元素插入表头</td>
+<td><code>lpushx key value</code></td>
+</tr>
+<tr>
+<td><code>rpush</code></td>
+<td>将指定元素插入列表末尾</td>
+<td><code>rpush key value [value ...]</code></td>
+</tr>
+<tr>
+<td><code>rpushx</code></td>
+<td>当列表存在则将元素插入表尾</td>
+<td><code>rpushx key value</code></td>
+</tr>
+<tr>
+<td><code>linsert</code></td>
+<td>将元素插入指定位置</td>
+<td><code>linsert key before/after pivot value</code></td>
+</tr>
+<tr>
+<td><code>lpop</code></td>
+<td>返回列表头元素</td>
+<td><code>lpop key</code></td>
+</tr>
+<tr>
+<td><code>blpop</code></td>
+<td>阻塞并弹出头元素</td>
+<td><code>blpop key [key ...] timeout</code></td>
+</tr>
+<tr>
+<td><code>rpop</code></td>
+<td>返回列表尾元素</td>
+<td><code>ltrim key start stop</code></td>
+</tr>
+<tr>
+<td><code>brpop</code></td>
+<td>阻塞并弹出末尾元素</td>
+<td><code>brpop key [key ...] timeout</code></td>
+</tr>
+<tr>
+<td><code>lindex</code></td>
+<td>返回指定位置的元素</td>
+<td><code>lindex key index</code></td>
+</tr>
+<tr>
+<td><code>lrange</code></td>
+<td>获取指定区间的元素</td>
+<td><code>lrange key start stop</code></td>
+</tr>
+<tr>
+<td><code>lset</code></td>
+<td>设置指定位元素</td>
+<td><code>lset key index value</code></td>
+</tr>
+<tr>
+<td><code>rpoplpush</code></td>
+<td>弹出尾元素，将弹出元素插入另一列表的开头</td>
+<td><code>rpoplpush source destination</code></td>
+</tr>
+<tr>
+<td><code>brpoplpush</code></td>
+<td>阻塞并弹出尾元素，将弹出元素插入另一列表的开头</td>
+<td><code>brpoplpush source destination timeout</code></td>
+</tr>
+<tr>
+<td><code>lrem</code></td>
+<td>移除元素</td>
+<td><code>lrem key count value</code></td>
+</tr>
+<tr>
+<td><code>ltrim</code></td>
+<td>列表裁剪</td>
+<td><code>ltrim key start stop</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="set"><a href="#set" class="headerlink" title="set"></a>set</h3><table>
+<thead>
+<tr>
+<th>关键字</th>
+<th>用处</th>
+<th>eg</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sadd</code></td>
+<td>添加元素</td>
+<td><code>sadd key member [member ...]</code></td>
+</tr>
+<tr>
+<td><code>scard</code></td>
+<td>集合元素数</td>
+<td><code>scard key</code></td>
+</tr>
+<tr>
+<td><code>smembers</code></td>
+<td>返回集合中成员</td>
+<td><code>smembers key</code></td>
+</tr>
+<tr>
+<td><code>sismember</code></td>
+<td>判断元素是否是集合成员</td>
+<td><code>sismember key member</code></td>
+</tr>
+<tr>
+<td><code>spop</code></td>
+<td>随机返回并移除一个元素</td>
+<td><code>spop key</code></td>
+</tr>
+<tr>
+<td><code>srandmember</code></td>
+<td>随机返回一个或多个元素</td>
+<td><code>srandmember key [count]</code></td>
+</tr>
+<tr>
+<td><code>srem</code></td>
+<td>移除指定的元素</td>
+<td><code>srem key member [member ...]</code></td>
+</tr>
+<tr>
+<td><code>smove</code></td>
+<td>将元素从集合移至另一个集合</td>
+<td><code>smove source destination member</code></td>
+</tr>
+<tr>
+<td><code>sdiff</code></td>
+<td>返回一或多个集合的差集</td>
+<td><code>sdiff key [key ...]</code></td>
+</tr>
+<tr>
+<td><code>sdiffstore</code></td>
+<td>将一或多个集合的差集保存至另一集合</td>
+<td><code>sdiffstore destination key [key ...]</code></td>
+</tr>
+<tr>
+<td><code>sinter</code></td>
+<td>将一或多个集合的交集保存至另一集合</td>
+<td><code>sinter key [key ...]</code></td>
+</tr>
+<tr>
+<td><code>sinterstore</code></td>
+<td>将一或多个集合的交集存储到新集合</td>
+<td><code>sinterstore destination key [key ...]</code></td>
+</tr>
+<tr>
+<td><code>sunion</code></td>
+<td>返回集合的并集</td>
+<td><code>sunion key [key ...]</code></td>
+</tr>
+<tr>
+<td><code>sunionstore</code></td>
+<td>将集合的并集插入新集合</td>
+<td><code>sunionstore destination key [key ...]</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="sorted-set"><a href="#sorted-set" class="headerlink" title="sorted set"></a>sorted set</h3><table>
+<thead>
+<tr>
+<th>关键字</th>
+<th>用处</th>
+<th>eg</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>zadd</code></td>
+<td>添加元素</td>
+<td><code>zadd key score member [[score member] [score member] ...]</code></td>
+</tr>
+<tr>
+<td><code>zincrby</code></td>
+<td>增加元素权重</td>
+<td><code>zincrby key increment member</code></td>
+</tr>
+<tr>
+<td><code>zcard</code></td>
+<td>返回集合基数</td>
+<td><code>zcard key</code></td>
+</tr>
+<tr>
+<td><code>zrank</code></td>
+<td>返回指定元素的排名</td>
+<td><code>zrank key member</code></td>
+</tr>
+<tr>
+<td><code>zscore</code></td>
+<td>返回指元素的权重</td>
+<td><code>zscore key member</code></td>
+</tr>
+<tr>
+<td><code>zcount</code></td>
+<td>返回集合两个权重间的元素数</td>
+<td><code>zcount key min max</code></td>
+</tr>
+<tr>
+<td><code>zrange</code></td>
+<td>返回指定区间内的元素</td>
+<td><code>zrange key start stop [withscores]</code></td>
+</tr>
+<tr>
+<td><code>zrevrange</code></td>
+<td>倒序返回指定区间内的元素</td>
+<td><code>zrevrange key start stop [withscores]</code></td>
+</tr>
+<tr>
+<td><code>zrangebyscore</code></td>
+<td>返回指定权重区间内的元素</td>
+<td><code>zrangebyscore key min max [withscores][limit offset count]</code></td>
+</tr>
+<tr>
+<td><code>zrevrangebyscore</code></td>
+<td>倒序返回指定权重区间内的元素</td>
+<td><code>zrevrangebyscore key max min [withscores] [limit offset count]</code></td>
+</tr>
+<tr>
+<td><code>zrem</code></td>
+<td>移除元素</td>
+<td><code>zrem key member [member ...]</code></td>
+</tr>
+<tr>
+<td><code>zremrangebyrank</code></td>
+<td>移除指定区间内的元素</td>
+<td><code>zremrangebyrank key start stop</code></td>
+</tr>
+<tr>
+<td><code>zremrangebyscore</code></td>
+<td>移除指定权重区间内的元素</td>
+<td><code>zremrangebyscore key min max</code></td>
+</tr>
+<tr>
+<td><code>zunionstore</code></td>
+<td>并集操作</td>
+<td><code>zunionstore destination numkeys key [key ...] [weights weight [weight ...]] [aggregate sum/min/max]</code></td>
+</tr>
+<tr>
+<td><code>zinterstore</code></td>
+<td>交集操作</td>
+<td><code>zinterstore destination numkeys key [key ...] [weights weight [weight ...]] [aggregate sum/min/max]</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="key"><a href="#key" class="headerlink" title="key"></a>key</h3><table>
+<thead>
+<tr>
+<th>关键字</th>
+<th>用处</th>
+<th>eg</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>keys</code></td>
+<td>查找键</td>
+<td><code>keys pattern</code></td>
+</tr>
+<tr>
+<td><code>exists</code></td>
+<td>判断key是否存在</td>
+<td><code>exists key</code></td>
+</tr>
+<tr>
+<td><code>randomkey</code></td>
+<td>随机返回一个key</td>
+<td><code>randomkey</code></td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td>返回值类型</td>
+<td><code>type key</code></td>
+</tr>
+<tr>
+<td><code>sort</code></td>
+<td>排序</td>
+<td><code>sort key [by pattern] [limit offset count] [get pattern [get pattern ...]] [asc / desc] [alpha] [store destination]</code></td>
+</tr>
+<tr>
+<td><code>del</code></td>
+<td>删除key</td>
+<td><code>del key [key ...]</code></td>
+</tr>
+<tr>
+<td><code>rename</code></td>
+<td>重命名</td>
+<td><code>rename key newkey</code></td>
+</tr>
+<tr>
+<td><code>renamenx</code></td>
+<td>仅当不存在时重命名</td>
+<td><code>renamenx key newkey</code></td>
+</tr>
+<tr>
+<td><code>dump</code></td>
+<td>序列化key</td>
+<td><code>dump key</code></td>
+</tr>
+<tr>
+<td><code>restore</code></td>
+<td>反序列化</td>
+<td><code>restore key ttl serialized-value</code></td>
+</tr>
+<tr>
+<td><code>expire</code></td>
+<td>设置key的生存时间</td>
+<td><code>expire key seconds</code></td>
+</tr>
+<tr>
+<td><code>expireat</code></td>
+<td>以时间戳格式设置生存时间</td>
+<td><code>expireat key timestamp</code></td>
+</tr>
+<tr>
+<td><code>persistat</code></td>
+<td>设置过期时间</td>
+<td><code>pexpireat key milliseconds-timestamp</code></td>
+</tr>
+<tr>
+<td><code>persist</code></td>
+<td>移除生存时间</td>
+<td><code>persist key</code></td>
+</tr>
+<tr>
+<td><code>ttl</code></td>
+<td>返回剩余生存时间(秒)</td>
+<td><code>ttl key</code></td>
+</tr>
+<tr>
+<td><code>pttl</code></td>
+<td>返回剩余生存时间(毫秒)</td>
+<td><code>pttl key</code></td>
+</tr>
+<tr>
+<td><code>migrate</code></td>
+<td>实例间键迁移</td>
+<td><code>migrate host port key destination-db timeout [copy] [replace]</code></td>
+</tr>
+<tr>
+<td><code>move</code></td>
+<td>同实例不同库间的键移动</td>
+<td><code>move key db</code></td>
+</tr>
+<tr>
+<td><code>object</code></td>
+<td>内部调试</td>
+<td><code>object subcommand [arguments [arguments]]</code></td>
+</tr>
+<tr>
+<td><code>scan</code></td>
+<td>增量迭代</td>
+<td><code>scan cursor [match pattern] [count count]</code></td>
+</tr>
+</tbody>
+</table>
+<p>原文地址：<a href="https://itbilu.com/database/redis" target="_blank" rel="noopener">https://itbilu.com/database/redis</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Redis/" rel="tag"># Redis</a>
+          
+            <a href="/tags/命令/" rel="tag"># 命令</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/12/04/toml to obj/" rel="next" title="Golang中Toml实现配置文件转对象">
+                <i class="fa fa-chevron-left"></i> Golang中Toml实现配置文件转对象
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/12/09/golang sort package/" rel="prev" title="Golang sort 包源码分析">
+                Golang sort 包源码分析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="lives" />
+          <p class="site-author-name" itemprop="name">lives</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#strings"><span class="nav-number">1.</span> <span class="nav-text"><a href="#strings" class="headerlink" title="strings"></a>strings</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hash"><span class="nav-number">2.</span> <span class="nav-text"><a href="#hash" class="headerlink" title="hash"></a>hash</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#list"><span class="nav-number">3.</span> <span class="nav-text"><a href="#list" class="headerlink" title="list"></a>list</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#set"><span class="nav-number">4.</span> <span class="nav-text"><a href="#set" class="headerlink" title="set"></a>set</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sorted-set"><span class="nav-number">5.</span> <span class="nav-text"><a href="#sorted-set" class="headerlink" title="sorted set"></a>sorted set</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#key"><span class="nav-number">6.</span> <span class="nav-text"><a href="#key" class="headerlink" title="key"></a>key</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">lives</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  <script type="text/javascript" src="/js/src/js.cookie.js?v=5.1.1"></script>
+  <script type="text/javascript" src="/js/src/scroll-cookie.js?v=5.1.1"></script>
+
+
+  
+
+</body>
+</html>

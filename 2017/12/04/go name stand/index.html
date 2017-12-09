@@ -1,0 +1,778 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Golang,命名," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="命名原则 惯性:同一个意义在不同地方，环境应该有同样的命名 短小: 不能太过长，不然读者只关注名字，而非逻辑（ps:申明位置和使用位置越远，命名应当越长） 精确: 易读，易理解">
+<meta name="keywords" content="Golang,命名">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Golang 命名规范">
+<meta property="og:url" content="liveshapps.github.io/2017/12/04/go name stand/index.html">
+<meta property="og:site_name" content="lives">
+<meta property="og:description" content="命名原则 惯性:同一个意义在不同地方，环境应该有同样的命名 短小: 不能太过长，不然读者只关注名字，而非逻辑（ps:申明位置和使用位置越远，命名应当越长） 精确: 易读，易理解">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-12-04T03:32:03.997Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Golang 命名规范">
+<meta name="twitter:description" content="命名原则 惯性:同一个意义在不同地方，环境应该有同样的命名 短小: 不能太过长，不然读者只关注名字，而非逻辑（ps:申明位置和使用位置越远，命名应当越长） 精确: 易读，易理解">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="liveshapps.github.io/2017/12/04/go name stand/"/>
+
+
+
+
+
+  <title>Golang 命名规范 | lives</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">lives</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">Life And Code Are Long Journey</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="liveshapps.github.io/2017/12/04/go name stand/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="lives">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="lives">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Golang 命名规范</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-04T11:32:03+08:00">
+                2017-12-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Golang/" itemprop="url" rel="index">
+                    <span itemprop="name">Golang</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="命名原则"><a href="#命名原则" class="headerlink" title="命名原则"></a>命名原则</h1><ul>
+<li>惯性:同一个意义在不同地方，环境应该有同样的命名</li>
+<li>短小: 不能太过长，不然读者只关注名字，而非逻辑（ps:申明位置和使用位置越远，命名应当越长）</li>
+<li>精确: 易读，易理解<a id="more"></a>
+</li>
+</ul>
+<h1 id="命名方式"><a href="#命名方式" class="headerlink" title="命名方式"></a>命名方式</h1><p>采用驼峰命名方式(ps:ServiceName),不要使用service_name<br>缩写要全大写(ServerHTTP)</p>
+<h1 id="局部变量"><a href="#局部变量" class="headerlink" title="局部变量"></a>局部变量</h1><p>局部变量尽量短小，<code>i</code>代替<code>index</code>；<br>如果函数过长，则需要对代码进行重构</p>
+<h1 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h1><p>函数参数默认是具有文档性质<br>当参数类型具有描述性时，则参数应当尽量短小<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">func AfterFunc(d Duration, f func()) *Timer</span><br><span class="line">func Escape(w io.Writer, s []byte)</span><br></pre></td></tr></table></figure></p>
+<p>当参数类型很模糊，则可以使用参数去描述<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">func Unix(sec, nsec int64) Time</span><br><span class="line">func HasPrefix(s, prefix []byte) bool</span><br></pre></td></tr></table></figure></p>
+<h1 id="返回值"><a href="#返回值" class="headerlink" title="返回值"></a>返回值</h1><p>返回值可以定义名字，作为文档性质，特别是在外部可见的函数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">func Copy(dst Writer, src Reader) (written int64, err error)</span><br><span class="line">func ScanBytes(data []byte, atEOF bool) (advance int, token []byte, err error)</span><br></pre></td></tr></table></figure></p>
+<h1 id="方法接收"><a href="#方法接收" class="headerlink" title="方法接收"></a>方法接收</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">func (b *Buffer) Read(p []byte) (n int, err error)</span><br><span class="line">func (sh serverHandler) ServeHTTP(rw ResponseWriter, req *Request)</span><br><span class="line">func (r Rectangle) Size() Point</span><br></pre></td></tr></table></figure>
+<p>需要注意的是，方法接收者的名字在同一类型的不同方法中应该保持统一，这也是前文所述的一贯性的需求</p>
+<h1 id="包级别的命名方式"><a href="#包级别的命名方式" class="headerlink" title="包级别的命名方式"></a>包级别的命名方式</h1><p>尽量采用<code>bytes.Buffer</code>、<code>strings.Read()</code><br>不宜采用<code>bytes.ByteBuffer</code>、<code>strings.StringsRead()</code></p>
+<h1 id="接口类型"><a href="#接口类型" class="headerlink" title="接口类型"></a>接口类型</h1><p>只含有一个方法的接口类型通常以函数名加上<code>er</code>后缀作为名字<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">type Reader interface &#123;</span><br><span class="line">    Read(p []byte) (n int, err error)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>接口多比接口少好</p>
+<h1 id="Error命名"><a href="#Error命名" class="headerlink" title="Error命名"></a>Error命名</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">type ExitError struct &#123;</span><br><span class="line">	....</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="包命名"><a href="#包命名" class="headerlink" title="包命名"></a>包命名</h1><p>应当与它导出代码的内容相关，避免<code>util</code>、<code>common</code>这种宽泛的命名</p>
+<h1 id="引入路径"><a href="#引入路径" class="headerlink" title="引入路径"></a>引入路径</h1><ul>
+<li>包路径的最后一个单词应该和包名一致</li>
+<li>包路径应该尽可能简洁</li>
+<li>记得把库的主要代码直接放在代码库的根目录</li>
+<li>避免在包路径中使用任何大写字母（并非所有文件系统都区分大小写）</li>
+</ul>
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p>参考来源:  <a href="http://zablog.me/2017/09/08/go_tricks_and_tips_2/" target="_blank" rel="noopener">http://zablog.me/2017/09/08/go_tricks_and_tips_2/</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Golang/" rel="tag"># Golang</a>
+          
+            <a href="/tags/命名/" rel="tag"># 命名</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/12/04/json file to struct/" rel="prev" title="Json 文件转换 Golang对象">
+                Json 文件转换 Golang对象 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="lives" />
+          <p class="site-author-name" itemprop="name">lives</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#命名原则"><span class="nav-number">1.</span> <span class="nav-text"><a href="#&#x547D;&#x540D;&#x539F;&#x5219;" class="headerlink" title="&#x547D;&#x540D;&#x539F;&#x5219;"></a>&#x547D;&#x540D;&#x539F;&#x5219;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#命名方式"><span class="nav-number">2.</span> <span class="nav-text"><a href="#&#x547D;&#x540D;&#x65B9;&#x5F0F;" class="headerlink" title="&#x547D;&#x540D;&#x65B9;&#x5F0F;"></a>&#x547D;&#x540D;&#x65B9;&#x5F0F;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#局部变量"><span class="nav-number">3.</span> <span class="nav-text"><a href="#&#x5C40;&#x90E8;&#x53D8;&#x91CF;" class="headerlink" title="&#x5C40;&#x90E8;&#x53D8;&#x91CF;"></a>&#x5C40;&#x90E8;&#x53D8;&#x91CF;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参数"><span class="nav-number">4.</span> <span class="nav-text"><a href="#&#x53C2;&#x6570;" class="headerlink" title="&#x53C2;&#x6570;"></a>&#x53C2;&#x6570;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#返回值"><span class="nav-number">5.</span> <span class="nav-text"><a href="#&#x8FD4;&#x56DE;&#x503C;" class="headerlink" title="&#x8FD4;&#x56DE;&#x503C;"></a>&#x8FD4;&#x56DE;&#x503C;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#方法接收"><span class="nav-number">6.</span> <span class="nav-text"><a href="#&#x65B9;&#x6CD5;&#x63A5;&#x6536;" class="headerlink" title="&#x65B9;&#x6CD5;&#x63A5;&#x6536;"></a>&#x65B9;&#x6CD5;&#x63A5;&#x6536;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#包级别的命名方式"><span class="nav-number">7.</span> <span class="nav-text"><a href="#&#x5305;&#x7EA7;&#x522B;&#x7684;&#x547D;&#x540D;&#x65B9;&#x5F0F;" class="headerlink" title="&#x5305;&#x7EA7;&#x522B;&#x7684;&#x547D;&#x540D;&#x65B9;&#x5F0F;"></a>&#x5305;&#x7EA7;&#x522B;&#x7684;&#x547D;&#x540D;&#x65B9;&#x5F0F;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#接口类型"><span class="nav-number">8.</span> <span class="nav-text"><a href="#&#x63A5;&#x53E3;&#x7C7B;&#x578B;" class="headerlink" title="&#x63A5;&#x53E3;&#x7C7B;&#x578B;"></a>&#x63A5;&#x53E3;&#x7C7B;&#x578B;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Error命名"><span class="nav-number">9.</span> <span class="nav-text"><a href="#Error&#x547D;&#x540D;" class="headerlink" title="Error&#x547D;&#x540D;"></a>Error&#x547D;&#x540D;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#包命名"><span class="nav-number">10.</span> <span class="nav-text"><a href="#&#x5305;&#x547D;&#x540D;" class="headerlink" title="&#x5305;&#x547D;&#x540D;"></a>&#x5305;&#x547D;&#x540D;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#引入路径"><span class="nav-number">11.</span> <span class="nav-text"><a href="#&#x5F15;&#x5165;&#x8DEF;&#x5F84;" class="headerlink" title="&#x5F15;&#x5165;&#x8DEF;&#x5F84;"></a>&#x5F15;&#x5165;&#x8DEF;&#x5F84;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考文章"><span class="nav-number">12.</span> <span class="nav-text"><a href="#&#x53C2;&#x8003;&#x6587;&#x7AE0;" class="headerlink" title="&#x53C2;&#x8003;&#x6587;&#x7AE0;"></a>&#x53C2;&#x8003;&#x6587;&#x7AE0;</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">lives</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  <script type="text/javascript" src="/js/src/js.cookie.js?v=5.1.1"></script>
+  <script type="text/javascript" src="/js/src/scroll-cookie.js?v=5.1.1"></script>
+
+
+  
+
+</body>
+</html>
