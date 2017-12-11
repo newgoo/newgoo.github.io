@@ -1,0 +1,822 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Golang,sync," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="包的用途 主要用于在并发中(同步机制，原子操作和对象池) 原子操作 atomic.Value使用的是汇编语言编写，在sync/atomic包中，在sync.atomic包中，有两个函数，Value.Store()和Value.Load()用于对内存中的数据进行原子的读和写，sync中的很多操作都是采用这样的方式对数据的于原子操作">
+<meta name="keywords" content="Golang,sync">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Golang sync 包解析">
+<meta property="og:url" content="liveshapps.github.io/2017/12/09/goland sync 包解析/index.html">
+<meta property="og:site_name" content="lives">
+<meta property="og:description" content="包的用途 主要用于在并发中(同步机制，原子操作和对象池) 原子操作 atomic.Value使用的是汇编语言编写，在sync/atomic包中，在sync.atomic包中，有两个函数，Value.Store()和Value.Load()用于对内存中的数据进行原子的读和写，sync中的很多操作都是采用这样的方式对数据的于原子操作">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-12-09T15:37:25.386Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Golang sync 包解析">
+<meta name="twitter:description" content="包的用途 主要用于在并发中(同步机制，原子操作和对象池) 原子操作 atomic.Value使用的是汇编语言编写，在sync/atomic包中，在sync.atomic包中，有两个函数，Value.Store()和Value.Load()用于对内存中的数据进行原子的读和写，sync中的很多操作都是采用这样的方式对数据的于原子操作">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="liveshapps.github.io/2017/12/09/goland sync 包解析/"/>
+
+
+
+
+
+  <title>Golang sync 包解析 | lives</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">lives</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">Life And Code Are Long Journey</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="liveshapps.github.io/2017/12/09/goland sync 包解析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="lives">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="lives">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Golang sync 包解析</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-09T23:27:23+08:00">
+                2017-12-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Golang/" itemprop="url" rel="index">
+                    <span itemprop="name">Golang</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Golang/sync/" itemprop="url" rel="index">
+                    <span itemprop="name">sync</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Golang/sync/源码/" itemprop="url" rel="index">
+                    <span itemprop="name">源码</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长</span>
+                
+                <span title="阅读时长">
+                  
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="包的用途"><a href="#包的用途" class="headerlink" title="包的用途"></a>包的用途</h1><p> 主要用于在并发中(同步机制，原子操作和对象池)</p>
+<h1 id="原子操作-atomic-Value"><a href="#原子操作-atomic-Value" class="headerlink" title="原子操作 atomic.Value"></a>原子操作 atomic.Value</h1><p>使用的是汇编语言编写，在<code>sync/atomic</code>包中，<br>在sync.atomic包中，有两个函数，<code>Value.Store()</code>和<code>Value.Load()</code>用于对内存中的数据进行原子的读和写，sync中的很多操作都是采用这样的方式对数据的于原子操作<br><a id="more"></a></p>
+<h1 id="Map-并发Map-1-9更新"><a href="#Map-并发Map-1-9更新" class="headerlink" title="Map 并发Map(1.9更新)"></a>Map 并发Map(1.9更新)</h1><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Map <span class="keyword">struct</span> &#123;</span><br><span class="line">	mu Mutex</span><br><span class="line">	read atomic.Value <span class="comment">// readOnly</span></span><br><span class="line">	dirty <span class="keyword">map</span>[<span class="keyword">interface</span>&#123;&#125;]*entry</span><br><span class="line">	misses <span class="keyword">int</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>方法<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Map)</span> <span class="title">Load</span><span class="params">(key <span class="keyword">interface</span>&#123;&#125;)</span> <span class="params">(value <span class="keyword">interface</span>&#123;&#125;, ok <span class="keyword">bool</span>)</span></span> &#123;&#125; <span class="comment">//读取map中的值,ok反应是否存在key</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Map)</span> <span class="title">Store</span><span class="params">(key, value <span class="keyword">interface</span>&#123;&#125;)</span></span> &#123;&#125;  <span class="comment">//原子操作存取数据到map中</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Map)</span> <span class="title">LoadOrStore</span><span class="params">(key, value <span class="keyword">interface</span>&#123;&#125;)</span> <span class="params">(actual <span class="keyword">interface</span>&#123;&#125;, loaded <span class="keyword">bool</span>)</span></span> &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Map)</span> <span class="title">Delete</span><span class="params">(key <span class="keyword">interface</span>&#123;&#125;)</span></span> &#123;&#125; <span class="comment">//删除map中的key</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Map)</span> <span class="title">Range</span><span class="params">(f <span class="keyword">func</span>(key, value <span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">bool</span>)</span> &#123;&#125; <span class="comment">//遍历sync.map中的数据</span></span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>在Go 1.9中sync.Map是怎么实现的呢？它是如何解决并发提升性能的呢？</li>
+<li>sync.Map的实现有几个优化点，这里先列出来，我们后面慢慢分析。</li>
+<li>空间换时间。 通过冗余的两个数据结构(read、dirty),实现加锁对性能的影响。</li>
+<li>使用只读数据(read)，避免读写冲突。</li>
+<li>动态调整，miss次数多了之后，将dirty数据提升为read。</li>
+<li>double-checking。</li>
+<li>延迟删除。 删除一个键值只是打标记，只有在提升dirty的时候才清理删除的数据。</li>
+<li>优先从read读取、更新、删除，因为对read的读取不需要锁。</li>
+</ul>
+<h1 id="Mutex-RWMutex-读写锁"><a href="#Mutex-RWMutex-读写锁" class="headerlink" title="Mutex/RWMutex 读写锁"></a>Mutex/RWMutex 读写锁</h1><ul>
+<li><p>Mutex</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Mutex <span class="keyword">struct</span> &#123;</span><br><span class="line">	state <span class="keyword">int32</span></span><br><span class="line">	sema  <span class="keyword">uint32</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>Lock()</code>方法</p>
+<pre><code>* cas操作修改锁状态到锁定，如果锁是锁定状态，不能修改
+* 则会进入自旋锁，忙等待锁的Unlock,由于自旋锁是有限制的，当到达上线后
+* 就会通过信号量，收到信号量后才能被唤醒，锁定
+</code></pre><p><code>Unlock()</code>方法</p>
+<pre><code>* case操作修改锁状态到解锁，并且释放信号量
+</code></pre></li>
+<li>RWMutex<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> RWMutex <span class="keyword">struct</span> &#123;</span><br><span class="line">	w           Mutex  <span class="comment">// held if there are pending writers</span></span><br><span class="line">	writerSem   <span class="keyword">uint32</span> <span class="comment">// semaphore for writers to wait for completing readers</span></span><br><span class="line">	readerSem   <span class="keyword">uint32</span> <span class="comment">// semaphore for readers to wait for completing writers</span></span><br><span class="line">	readerCount <span class="keyword">int32</span>  <span class="comment">// number of pending readers</span></span><br><span class="line">	readerWait  <span class="keyword">int32</span>  <span class="comment">// number of departing readers</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>对象中有读(<code>readerSem</code>)和写(<code>writerSem</code>)两个信号量,相比<code>Mutex</code>，没了自旋锁的，直接获取信号量</p>
+<p><strong>ps:RWMutex主要应用在读多写少的场景中</strong></p>
+<h1 id="Cond"><a href="#Cond" class="headerlink" title="Cond"></a>Cond</h1><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Cond <span class="keyword">struct</span> &#123;</span><br><span class="line">	noCopy noCopy <span class="comment">//等待计数器</span></span><br><span class="line">	L Locker <span class="comment">//锁</span></span><br><span class="line">	notify  notifyList <span class="comment">//信号量</span></span><br><span class="line">	checker copyChecker</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>在等待一个goruntime执行完成后让使得另一个goruntime执行的话就可以使用cond这样的对象<br>usage:<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"sync"</span></span><br><span class="line">	<span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	cond := sync.NewCond(<span class="built_in">new</span>(sync.Mutex))</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(cd *sync.Cond)</span></span> &#123;</span><br><span class="line">		cd.L.Lock()</span><br><span class="line">		cd.Wait()</span><br><span class="line">		fmt.Println(<span class="string">"after single..."</span>)</span><br><span class="line">		cd.L.Unlock()</span><br><span class="line">	&#125;(cond)</span><br><span class="line"></span><br><span class="line">	time.Sleep(time.Second * <span class="number">2</span>)</span><br><span class="line">	cond.L.Lock()</span><br><span class="line">	cond.Signal()</span><br><span class="line">	fmt.Println(<span class="string">"single..."</span>)</span><br><span class="line">	cond.L.Unlock()</span><br><span class="line">	time.Sleep(time.Second * <span class="number">2</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="WaitGroup"><a href="#WaitGroup" class="headerlink" title="WaitGroup"></a>WaitGroup</h1><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> WaitGroup <span class="keyword">struct</span> &#123;</span><br><span class="line">	noCopy noCopy</span><br><span class="line">	state1 [<span class="number">12</span>]<span class="keyword">byte</span> <span class="comment">//计数器</span></span><br><span class="line">	sema   <span class="keyword">uint32</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>在多个goruntime执行完成后才能去执行操作使用</li>
+<li>必须等上一次使用中所有的Wait均已返回才行</li>
+<li>知道计数器值为0，才往下执行<br>usage:<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"sync"</span></span><br><span class="line">	<span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	wg := <span class="built_in">new</span>(sync.WaitGroup)</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">5</span>; i++ &#123;</span><br><span class="line">		<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(i <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">			wg.Add(<span class="number">1</span>)</span><br><span class="line">			<span class="keyword">defer</span> wg.Done()</span><br><span class="line">			time.Sleep(time.Second * <span class="number">2</span>)</span><br><span class="line">			fmt.Println(<span class="string">"exec %d goruntime..."</span>, i)</span><br><span class="line">		&#125;(i)</span><br><span class="line">	&#125;</span><br><span class="line">	time.Sleep(time.Second)</span><br><span class="line">	wg.Wait()</span><br><span class="line">	fmt.Println(<span class="string">"after all goruntime exec over...."</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="Once-判断函数是否执行-原子操作"><a href="#Once-判断函数是否执行-原子操作" class="headerlink" title="Once 判断函数是否执行(原子操作)"></a>Once 判断函数是否执行(原子操作)</h1><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Once <span class="keyword">struct</span> &#123;</span><br><span class="line">	m    Mutex</span><br><span class="line">	done <span class="keyword">uint32</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>如果函数是已经执行的函数，原子判断是否为done如果是的话，就会返回</li>
+<li>如果没有执行过，就会加锁后，对该函数进行执行(原子操作)</li>
+</ul>
+<p>usage:<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(o *Once)</span> <span class="title">Do</span><span class="params">(f <span class="keyword">func</span>()</span>)</span> &#123;</span><br><span class="line">         <span class="keyword">if</span> atomic.LoadUint32(&amp;o.done) == <span class="number">1</span> &#123;</span><br><span class="line">             <span class="keyword">return</span></span><br><span class="line">         &#125;</span><br><span class="line">         <span class="comment">// Slow-path.</span></span><br><span class="line">         o.m.Lock()</span><br><span class="line">         <span class="keyword">defer</span> o.m.Unlock()</span><br><span class="line">         <span class="keyword">if</span> o.done == <span class="number">0</span> &#123;</span><br><span class="line">             <span class="keyword">defer</span> atomic.StoreUint32(&amp;o.done, <span class="number">1</span>)</span><br><span class="line">             f()</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Golang/" rel="tag"># Golang</a>
+          
+            <a href="/tags/sync/" rel="tag"># sync</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/12/09/golang sort package/" rel="next" title="Golang sort 包源码分析">
+                <i class="fa fa-chevron-left"></i> Golang sort 包源码分析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="lives" />
+          <p class="site-author-name" itemprop="name">lives</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#包的用途"><span class="nav-number">1.</span> <span class="nav-text"><a href="#&#x5305;&#x7684;&#x7528;&#x9014;" class="headerlink" title="&#x5305;&#x7684;&#x7528;&#x9014;"></a>&#x5305;&#x7684;&#x7528;&#x9014;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#原子操作-atomic-Value"><span class="nav-number">2.</span> <span class="nav-text"><a href="#&#x539F;&#x5B50;&#x64CD;&#x4F5C;-atomic-Value" class="headerlink" title="&#x539F;&#x5B50;&#x64CD;&#x4F5C; atomic.Value"></a>&#x539F;&#x5B50;&#x64CD;&#x4F5C; atomic.Value</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Map-并发Map-1-9更新"><span class="nav-number">3.</span> <span class="nav-text"><a href="#Map-&#x5E76;&#x53D1;Map-1-9&#x66F4;&#x65B0;" class="headerlink" title="Map &#x5E76;&#x53D1;Map(1.9&#x66F4;&#x65B0;)"></a>Map &#x5E76;&#x53D1;Map(1.9&#x66F4;&#x65B0;)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Mutex-RWMutex-读写锁"><span class="nav-number">4.</span> <span class="nav-text"><a href="#Mutex-RWMutex-&#x8BFB;&#x5199;&#x9501;" class="headerlink" title="Mutex/RWMutex &#x8BFB;&#x5199;&#x9501;"></a>Mutex/RWMutex &#x8BFB;&#x5199;&#x9501;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Cond"><span class="nav-number">5.</span> <span class="nav-text"><a href="#Cond" class="headerlink" title="Cond"></a>Cond</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#WaitGroup"><span class="nav-number">6.</span> <span class="nav-text"><a href="#WaitGroup" class="headerlink" title="WaitGroup"></a>WaitGroup</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Once-判断函数是否执行-原子操作"><span class="nav-number">7.</span> <span class="nav-text"><a href="#Once-&#x5224;&#x65AD;&#x51FD;&#x6570;&#x662F;&#x5426;&#x6267;&#x884C;-&#x539F;&#x5B50;&#x64CD;&#x4F5C;" class="headerlink" title="Once &#x5224;&#x65AD;&#x51FD;&#x6570;&#x662F;&#x5426;&#x6267;&#x884C;(&#x539F;&#x5B50;&#x64CD;&#x4F5C;)"></a>Once &#x5224;&#x65AD;&#x51FD;&#x6570;&#x662F;&#x5426;&#x6267;&#x884C;(&#x539F;&#x5B50;&#x64CD;&#x4F5C;)</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">lives</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  <script type="text/javascript" src="/js/src/js.cookie.js?v=5.1.1"></script>
+  <script type="text/javascript" src="/js/src/scroll-cookie.js?v=5.1.1"></script>
+
+
+  
+
+</body>
+</html>
