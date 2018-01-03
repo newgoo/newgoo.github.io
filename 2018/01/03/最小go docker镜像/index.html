@@ -77,7 +77,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Golang,Toml,配置," />
+  <meta name="keywords" content="Golang,docker,dockerfile," />
 
 
 
@@ -93,18 +93,18 @@
 
 
 
-<meta name="description" content="配置信息转化成对象信息当我们相对某一个固定变量进行赋值的情况，比如mysql的配置信息，redis的配置信息，这些比较固定的信息，可以通过编写配置信息来实现对信息的配置">
-<meta name="keywords" content="Golang,Toml,配置">
+<meta name="description" content="dockerfile 沿着时间的轨迹，Docker 镜像构建走到了今天。追求又快又小的镜像已成为了 Docker 社区 的共识。">
+<meta name="keywords" content="Golang,docker,dockerfile">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Golang中Toml实现配置文件转对象">
-<meta property="og:url" content="liveshapps.github.io/2017/12/04/toml to obj/index.html">
+<meta property="og:title" content="Golang中构建最小的docker镜像">
+<meta property="og:url" content="liveshapps.github.io/2018/01/03/最小go docker镜像/index.html">
 <meta property="og:site_name" content="lives">
-<meta property="og:description" content="配置信息转化成对象信息当我们相对某一个固定变量进行赋值的情况，比如mysql的配置信息，redis的配置信息，这些比较固定的信息，可以通过编写配置信息来实现对信息的配置">
+<meta property="og:description" content="dockerfile 沿着时间的轨迹，Docker 镜像构建走到了今天。追求又快又小的镜像已成为了 Docker 社区 的共识。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-12-04T03:32:03.999Z">
+<meta property="og:updated_time" content="2018-01-03T02:15:02.064Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Golang中Toml实现配置文件转对象">
-<meta name="twitter:description" content="配置信息转化成对象信息当我们相对某一个固定变量进行赋值的情况，比如mysql的配置信息，redis的配置信息，这些比较固定的信息，可以通过编写配置信息来实现对信息的配置">
+<meta name="twitter:title" content="Golang中构建最小的docker镜像">
+<meta name="twitter:description" content="dockerfile 沿着时间的轨迹，Docker 镜像构建走到了今天。追求又快又小的镜像已成为了 Docker 社区 的共识。">
 
 
 
@@ -132,13 +132,13 @@
 
 
 
-  <link rel="canonical" href="liveshapps.github.io/2017/12/04/toml to obj/"/>
+  <link rel="canonical" href="liveshapps.github.io/2018/01/03/最小go docker镜像/"/>
 
 
 
 
 
-  <title>Golang中Toml实现配置文件转对象 | lives</title>
+  <title>Golang中构建最小的docker镜像 | lives</title>
   
 
 
@@ -277,7 +277,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="liveshapps.github.io/2017/12/04/toml to obj/">
+    <link itemprop="mainEntityOfPage" href="liveshapps.github.io/2018/01/03/最小go docker镜像/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="lives">
@@ -294,7 +294,7 @@
 
         
         
-          <h2 class="post-title" itemprop="name headline">Golang中Toml实现配置文件转对象</h2>
+          <h2 class="post-title" itemprop="name headline">Golang中构建最小的docker镜像</h2>
         
 
         <div class="post-meta">
@@ -306,8 +306,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-04T11:32:03+08:00">
-                2017-12-04
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-03T10:04:45+08:00">
+                2018-01-03
               </time>
             
 
@@ -340,8 +340,8 @@
                 
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Golang/Toml/" itemprop="url" rel="index">
-                    <span itemprop="name">Toml</span>
+                  <a href="/categories/Golang/docker/" itemprop="url" rel="index">
+                    <span itemprop="name">docker</span>
                   </a>
                 </span>
 
@@ -392,11 +392,10 @@
       
 
       
-        <h1 id="配置信息转化成对象信息"><a href="#配置信息转化成对象信息" class="headerlink" title="配置信息转化成对象信息"></a>配置信息转化成对象信息</h1><p>当我们相对某一个固定变量进行赋值的情况，比如mysql的配置信息，redis的配置信息，这些比较固定的信息，可以通过编写配置信息来实现对信息的配置</p>
-<a id="more"></a>
-<p>配置信息:test.toml</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">addr=&quot;127.0.0.1:6389&quot;</span><br><span class="line">#log_path: /Users/flike/src</span><br><span class="line">#日志级别</span><br><span class="line">log_level=&quot;debug&quot;</span><br><span class="line"></span><br><span class="line">[storage_db]</span><br><span class="line">mysql_host=&quot;127.0.0.1&quot;</span><br><span class="line">mysql_port=3306</span><br><span class="line">db_name=&quot;redis&quot;</span><br><span class="line">user=&quot;root&quot;</span><br><span class="line">password=&quot;root123&quot;</span><br><span class="line">max_idle_conns=64</span><br></pre></td></tr></table></figure>
-<p>函数位置 main.go<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	&quot;io/ioutil&quot;</span><br><span class="line"></span><br><span class="line">	&quot;github.com/BurntSushi/toml&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">type Config struct &#123;</span><br><span class="line">	Addr           string    `toml:&quot;addr&quot;`</span><br><span class="line">	LogPath        string    `toml:&quot;log_path&quot;`</span><br><span class="line">	LogLevel       string    `toml:&quot;log_level&quot;`</span><br><span class="line">	DatabaseConfig *DBConfig `toml:&quot;storage_db&quot;`</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type DBConfig struct &#123;</span><br><span class="line">	Host         string `toml:&quot;mysql_host&quot;`</span><br><span class="line">	Port         int    `toml:&quot;mysql_port&quot;`</span><br><span class="line">	User         string `toml:&quot;user&quot;`</span><br><span class="line">	Password     string `toml:&quot;password&quot;`</span><br><span class="line">	DBName       string `toml:&quot;db_name&quot;`</span><br><span class="line">	MaxIdleConns int    `toml:&quot;max_idle_conns&quot;`</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main()&#123;</span><br><span class="line">  var configFile *string = flag.String(&quot;config&quot;, &quot;test.toml&quot;, &quot;idgo config file&quot;)</span><br><span class="line">  if len(*configFile) == 0 &#123;</span><br><span class="line">		fmt.Println(&quot;must use a config file&quot;)</span><br><span class="line">		return</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	cfg, err := config.ParseConfigFile(*configFile)</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		fmt.Printf(&quot;parse config file error:%v\n&quot;, err.Error())</span><br><span class="line">		return</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func ParseConfigFile(fileName string) (*Config, error) &#123;</span><br><span class="line">	var cfg Config</span><br><span class="line"></span><br><span class="line">	data, err := ioutil.ReadFile(fileName)</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		return nil, err</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	_, err = toml.Decode(string(data), &amp;cfg)</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		return nil, err</span><br><span class="line">	&#125;</span><br><span class="line">	return &amp;cfg, nil</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+        <h3 id="dockerfile"><a href="#dockerfile" class="headerlink" title="dockerfile"></a>dockerfile</h3><ul>
+<li>沿着时间的轨迹，Docker 镜像构建走到了今天。追求又快又小的镜像已成为了 Docker 社区 的共识。<a id="more"></a>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> golang:<span class="number">1.9</span> as builder</span><br><span class="line"><span class="keyword">WORKDIR</span> /go/src/git.zituo.net/niu/UserService</span><br><span class="line">COPY . .</span><br><span class="line">RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o UserServer .</span><br><span class="line"></span><br><span class="line">FROM alpine:latest</span><br><span class="line">LABEL maintainer = "happs.lives@gmail.com"</span><br><span class="line">RUN apk --no-cache add ca-certificates tzdata \</span><br><span class="line">			&amp;&amp; cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \</span><br><span class="line">			&amp;&amp; echo "Asia/Shanghai" &gt;  /etc/timezone \</span><br><span class="line">			&amp;&amp; apk del tzdata</span><br><span class="line">WORKDIR /root/UserService</span><br><span class="line">COPY --from=builder /go/src/git.zituo.net/niu/UserService/UserServer .</span><br><span class="line">COPY --from=builder /usr/local/go/lib/time/zoneinfo.zip /usr/local/go/lib/time/zoneinfo.zip</span><br><span class="line">COPY --from=builder /go/src/git.zituo.net/niu/UserService/keys/ ./keys/</span><br><span class="line">COPY --from=builder /go/src/git.zituo.net/niu/UserService/conf/ ./conf/</span><br><span class="line">EXPOSE 8001</span><br><span class="line"></span><br><span class="line">CMD [ "./UserServer" ]</span><br></pre></td></tr></table></figure></li>
+</ul>
 
       
     </div>
@@ -428,9 +427,9 @@
           
             <a href="/tags/Golang/" rel="tag"># Golang</a>
           
-            <a href="/tags/Toml/" rel="tag"># Toml</a>
+            <a href="/tags/docker/" rel="tag"># docker</a>
           
-            <a href="/tags/配置/" rel="tag"># 配置</a>
+            <a href="/tags/dockerfile/" rel="tag"># dockerfile</a>
           
         </div>
       
@@ -443,8 +442,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/12/04/how to user redis/" rel="next" title="Redis设计">
-                <i class="fa fa-chevron-left"></i> Redis设计
+              <a href="/2017/12/09/goland sync 包解析/" rel="next" title="Golang sync 包解析">
+                <i class="fa fa-chevron-left"></i> Golang sync 包解析
               </a>
             
           </div>
@@ -452,10 +451,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/12/04/redis/" rel="prev" title="Redis命令管理">
-                Redis命令管理 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -584,7 +579,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#配置信息转化成对象信息"><span class="nav-number">1.</span> <span class="nav-text"><a href="#&#x914D;&#x7F6E;&#x4FE1;&#x606F;&#x8F6C;&#x5316;&#x6210;&#x5BF9;&#x8C61;&#x4FE1;&#x606F;" class="headerlink" title="&#x914D;&#x7F6E;&#x4FE1;&#x606F;&#x8F6C;&#x5316;&#x6210;&#x5BF9;&#x8C61;&#x4FE1;&#x606F;"></a>&#x914D;&#x7F6E;&#x4FE1;&#x606F;&#x8F6C;&#x5316;&#x6210;&#x5BF9;&#x8C61;&#x4FE1;&#x606F;</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#dockerfile"><span class="nav-number">1.</span> <span class="nav-text"><a href="#dockerfile" class="headerlink" title="dockerfile"></a>dockerfile</span></a></li></ol></div>
             
 
           </div>
